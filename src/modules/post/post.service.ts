@@ -14,11 +14,19 @@ import {
   PaginationQueryDto,
 } from '../../common/dto/pagination.dto';
 import { JwtPayloadUser } from '../auth/types/jwt-payload';
-import { UserRole } from '../user/schema/user.schema';
+import { User, UserRole } from '../user/schema/user.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostResponseDto } from './dto/post-response.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schema/post.schema';
+
+type PopulatedAuthor = Pick<User, 'name' | 'role'> & {
+  _id: Types.ObjectId;
+};
+
+type PostWithAuthor = Omit<PostDocument, 'authorId'> & {
+  authorId: Types.ObjectId | PopulatedAuthor;
+};
 
 @Injectable()
 export class PostService {
@@ -35,7 +43,8 @@ export class PostService {
       title: dto.title,
       body: dto.body ?? '',
     });
-    return this.toResponse(post);
+    await post.populate('authorId', 'name role');
+    return this.toResponse(post as PostWithAuthor);
   }
 
   async findAll(
@@ -46,23 +55,32 @@ export class PostService {
 
     const rows = await this.postModel
       .find(filter)
+      .populate('authorId', 'name role')
       .sort(CURSOR_SORT)
       .limit(query.limit + 1)
       .exec();
 
-    const { pageItems, meta } = buildCursorMeta(rows, query.limit);
+    const { pageItems, meta } = buildCursorMeta(
+      rows as PostDocument[],
+      query.limit,
+    );
     return {
-      items: pageItems.map((post) => this.toResponse(post)),
+      items: pageItems.map((post) =>
+        this.toResponse(post as unknown as PostWithAuthor),
+      ),
       meta,
     };
   }
 
   async findById(id: string): Promise<PostResponseDto> {
-    const post = await this.postModel.findById(id).exec();
+    const post = await this.postModel
+      .findById(id)
+      .populate('authorId', 'name role')
+      .exec();
     if (!post) {
       throw new NotFoundException('Post not found');
     }
-    return this.toResponse(post);
+    return this.toResponse(post as unknown as PostWithAuthor);
   }
 
   async update(
@@ -74,13 +92,14 @@ export class PostService {
 
     const post = await this.postModel
       .findByIdAndUpdate(id, dto, { returnDocument: 'after' })
+      .populate('authorId', 'name role')
       .exec();
 
     if (!post) {
       throw new NotFoundException('Post not found');
     }
 
-    return this.toResponse(post);
+    return this.toResponse(post as unknown as PostWithAuthor);
   }
 
   async remove(id: string, actor: JwtPayloadUser): Promise<void> {
@@ -108,14 +127,34 @@ export class PostService {
     return post;
   }
 
-  private toResponse(post: PostDocument): PostResponseDto {
+  private toResponse(post: PostWithAuthor): PostResponseDto {
+    const author = this.resolveAuthor(post.authorId);
+
     return {
       id: post._id.toString(),
-      authorId: post.authorId.toString(),
+      authorId: author.id,
+      authorName: author.name,
+      authorRole: author.role,
       title: post.title,
       body: post.body,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
+    };
+  }
+
+  private resolveAuthor(authorId: Types.ObjectId | PopulatedAuthor): {
+    id: string;
+    name: string;
+    role: UserRole;
+  } {
+    if (authorId instanceof Types.ObjectId) {
+      return { id: authorId.toString(), name: '', role: UserRole.USER };
+    }
+
+    return {
+      id: authorId._id.toString(),
+      name: authorId.name,
+      role: authorId.role,
     };
   }
 }
