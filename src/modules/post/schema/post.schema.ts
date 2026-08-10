@@ -6,6 +6,7 @@ export type PostDocument = HydratedDocument<Post>;
 
 @Schema({
   timestamps: true,
+  collection: 'posts',
 })
 export class Post {
   @Prop({

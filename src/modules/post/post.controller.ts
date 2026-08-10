@@ -12,7 +12,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Types } from 'mongoose';
 import {
   ApiSuccessResponse,
   ApiSuccessResponsePaginated,
@@ -56,8 +55,8 @@ export class PostController {
   @ApiOperation({ summary: 'Get a post by id' })
   @ApiSuccessResponse(PostResponseDto)
   @ResponseMessage('Post retrieved')
-  findOne(@Param('id', ParseObjectIdPipe) id: Types.ObjectId) {
-    return this.postService.findById(id.toString());
+  findOne(@Param('id', ParseObjectIdPipe) id: string) {
+    return this.postService.findById(id);
   }
 
   @Patch(':id')
@@ -65,11 +64,11 @@ export class PostController {
   @ApiSuccessResponse(PostResponseDto)
   @ResponseMessage('Post updated')
   update(
-    @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
+    @Param('id', ParseObjectIdPipe) id: string,
     @Body() dto: UpdatePostDto,
     @CurrentUser() actor: JwtPayloadUser,
   ) {
-    return this.postService.update(id.toString(), dto, actor);
+    return this.postService.update(id, dto, actor);
   }
 
   @Delete(':id')
@@ -77,10 +76,10 @@ export class PostController {
   @ApiOperation({ summary: 'Delete a post (author or admin)' })
   @ResponseMessage('Post deleted')
   async remove(
-    @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
+    @Param('id', ParseObjectIdPipe) id: string,
     @CurrentUser() actor: JwtPayloadUser,
   ) {
-    await this.postService.remove(id.toString(), actor);
+    await this.postService.remove(id, actor);
     return null;
   }
 }
