@@ -1,98 +1,193 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Secure Note-Taking App — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API for a secure note-taking platform with JWT authentication, role-based access control (user / admin), cursor pagination, and MongoDB aggregations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Built with **NestJS**, **MongoDB (Mongoose)**, **Passport JWT**, and **bcryptjs**.
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Auth: register, login, refresh tokens, current user profile
+- Users: admin CRUD, self profile update, group-by-interests aggregation
+- Notes: private notes with owner RBAC (users manage own; admins can view/manage all)
+- Posts: public feed for authenticated users; author (or admin) can update/delete
+- Aggregations:
+  - `GET /api/users/by-interests` — group users by interests (`$unwind` / `$group`)
+  - `GET /api/users/:id/posts` — posts for a user via `$lookup`
+- Cursor-based pagination on list endpoints
+- Indexed schemas (`schema.index`) for list, read, and aggregation paths
+- Swagger docs at `/api/docs`
 
-## Project setup
+## Tech stack
 
-```bash
-$ pnpm install
+| Layer | Choice |
+| --- | --- |
+| Runtime | Node.js |
+| Framework | NestJS 11 |
+| Database | MongoDB + Mongoose 9 |
+| Auth | JWT (access + refresh), Passport |
+| Passwords | bcryptjs |
+| Package manager | pnpm |
+| Docs | Swagger / OpenAPI |
+
+## Requirements
+
+- Node.js 20+ (recommended)
+- pnpm
+- MongoDB (local or Atlas)
+
+## Project structure
+
+```
+src/
+├── main.ts                 # Bootstrap, ValidationPipe, Swagger
+├── app.module.ts
+├── config/                 # Env configuration + Joi validation
+├── common/
+│   ├── decorators/         # Response / roles / current-user helpers
+│   ├── dto/                # API envelope + cursor pagination
+│   ├── filters/            # Global exception filter
+│   ├── guards/             # JWT + roles guards
+│   ├── interceptors/       # Success response envelope
+│   └── pipes/              # ObjectId validation
+├── modules/
+│   ├── auth/               # Register, login, refresh, me
+│   ├── user/               # User CRUD + aggregations
+│   ├── note/               # Private notes CRUD
+│   └── post/               # Public posts CRUD
+└── scripts/
+    └── seed-admin.ts       # Idempotent admin upsert
 ```
 
-## Compile and run the project
+## Setup
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
+cp .env.example .env
 ```
 
-## Run tests
+Edit `.env` with your MongoDB URI and JWT secrets:
+
+```env
+PORT=5000
+DB_URI=mongodb://localhost:27017/secure-note-taking-app-db
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=1h
+JWT_REFRESH_SECRET=your-refresh-secret-key
+JWT_REFRESH_EXPIRES_IN=7d
+BCRYPT_SALT_ROUNDS=12
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=ChangeMe123!
+ADMIN_NAME=Admin
+```
+
+Seed the admin user (idempotent):
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm seed:admin
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Run
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+# development (watch)
+pnpm start:dev
+
+# production build + run
+pnpm build
+pnpm start:prod
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+API base URL: `http://localhost:5000/api`  
+Swagger UI: `http://localhost:5000/api/docs`
 
-## Resources
+## Roles & permissions
 
-Check out a few resources that may come in handy when working with NestJS:
+| Action | User | Admin |
+| --- | --- | --- |
+| Auth (register / login / me) | yes | yes |
+| Manage own notes | yes | yes |
+| View / manage all notes | no | yes |
+| List / create / delete users | no | yes |
+| Create posts / list posts | yes | yes |
+| Update / delete own posts | yes | yes |
+| Update / delete any post | no | yes |
+| Aggregations (interests, user posts) | yes (authenticated) | yes |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Main API routes
 
-## Support
+All routes are under `/api`. Protected routes need `Authorization: Bearer <accessToken>`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Auth
 
-## Stay in touch
+| Method | Path | Access |
+| --- | --- | --- |
+| `POST` | `/auth/register` | Public |
+| `POST` | `/auth/login` | Public |
+| `POST` | `/auth/refresh` | Refresh token body |
+| `GET` | `/auth/me` | JWT |
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Users
+
+| Method | Path | Access |
+| --- | --- | --- |
+| `GET` | `/users` | Admin (cursor paginated) |
+| `POST` | `/users` | Admin |
+| `GET` | `/users/by-interests` | JWT |
+| `GET` | `/users/:id/posts` | JWT (`$lookup`) |
+| `GET` / `PATCH` | `/users/:id` | Self or admin |
+| `DELETE` | `/users/:id` | Admin |
+
+### Notes
+
+| Method | Path | Access |
+| --- | --- | --- |
+| `GET` / `POST` | `/notes` | JWT (list = own, or all for admin) |
+| `GET` / `PATCH` / `DELETE` | `/notes/:id` | Owner or admin |
+
+### Posts
+
+| Method | Path | Access |
+| --- | --- | --- |
+| `GET` / `POST` | `/posts` | JWT |
+| `GET` | `/posts/:id` | JWT |
+| `PATCH` / `DELETE` | `/posts/:id` | Author or admin |
+
+### Pagination
+
+List endpoints accept query params:
+
+- `cursor` — opaque cursor from previous `meta.nextCursor` (optional)
+- `limit` — page size (default `10`, max `100`)
+
+Response meta shape:
+
+```json
+{
+  "nextCursor": "...",
+  "hasMore": true,
+  "limit": 10
+}
+```
+
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `pnpm start:dev` | Dev server with watch |
+| `pnpm build` | Compile to `dist/` |
+| `pnpm start:prod` | Run compiled app |
+| `pnpm seed:admin` | Upsert admin from `ADMIN_*` env |
+| `pnpm lint` | ESLint |
+| `pnpm test` | Unit tests |
+
+## Indexes
+
+Indexes are declared with `Schema.index` in:
+
+- `src/modules/user/schema/user.schema.ts` — email (unique), interests, createdAt+_id
+- `src/modules/note/schema/note.schema.ts` — ownerId+createdAt+_id, createdAt+_id
+- `src/modules/post/schema/post.schema.ts` — authorId, createdAt+_id
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+UNLICENSED (private interview / project use).
