@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Model, Types } from 'mongoose';
-import { Configuration } from '@/config/configuration.type';
+import { Configuration } from '../../config/configuration.type';
 import {
   buildCursorMeta,
   CURSOR_SORT,
@@ -17,8 +17,8 @@ import {
   decodeCursor,
   PaginatedResult,
   PaginationQueryDto,
-} from '@/common/dto/pagination.dto';
-import { JwtPayloadUser } from '@/modules/auth/types/jwt-payload';
+} from '../../common/dto/pagination.dto';
+import { JwtPayloadUser } from '../auth/types/jwt-payload';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';

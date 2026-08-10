@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationMeta } from '@/common/dto/pagination.dto';
+import { PaginationMeta } from './pagination.dto';
 
 export class ApiSuccessDto<T = unknown> {
   @ApiProperty({ type: Boolean, default: true })

@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Configuration } from '@/config/configuration.type';
-import { UserService } from '@/modules/user/user.service';
-import { UserResponseDto } from '@/modules/user/dto/user-response.dto';
+import { Configuration } from '../../config/configuration.type';
+import { UserService } from '../user/user.service';
+import { UserResponseDto } from '../user/dto/user-response.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';

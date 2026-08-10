@@ -13,19 +13,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import { Roles } from '@/common/decorators/roles.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
 import {
   ApiSuccessResponse,
   ApiSuccessResponseArray,
   ApiSuccessResponsePaginated,
-} from '@/common/decorators/api-success-response.decorator';
-import { ResponseMessage } from '@/common/decorators/response-message.decorator';
-import { PaginationQueryDto } from '@/common/dto/pagination.dto';
-import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
-import { ParseObjectIdPipe } from '@/common/pipes/parse-object-id.pipe';
-import { JwtPayloadUser } from '@/modules/auth/types/jwt-payload';
+} from '../../common/decorators/api-success-response.decorator';
+import { ResponseMessage } from '../../common/decorators/response-message.decorator';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { ParseObjectIdPipe } from '../../common/pipes/parse-object-id.pipe';
+import { JwtPayloadUser } from '../auth/types/jwt-payload';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InterestGroupDto } from './dto/interest-group.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

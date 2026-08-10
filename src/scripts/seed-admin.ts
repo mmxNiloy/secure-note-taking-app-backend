@@ -4,15 +4,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import configuration from '@/config/configuration';
-import { validationSchema } from '@/config/validation';
-import { Configuration } from '@/config/configuration.type';
+import configuration from '../config/configuration';
+import { validationSchema } from '../config/validation';
+import { Configuration } from '../config/configuration.type';
 import {
   User,
   UserDocument,
   UserRole,
   UserSchema,
-} from '@/modules/user/schema/user.schema';
+} from '../modules/user/schema/user.schema';
 
 @Module({
   imports: [
