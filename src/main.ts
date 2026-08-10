@@ -11,6 +11,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
@@ -25,7 +26,9 @@ async function bootstrap() {
       schema: {
         type: 'object',
         properties: {
-          message: { type: 'string' },
+          success: { type: 'boolean', example: false },
+          statusCode: { type: 'number', example: 401 },
+          message: { type: 'string', example: 'Unauthorized' },
         },
       },
     })
