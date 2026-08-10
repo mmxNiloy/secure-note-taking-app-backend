@@ -26,6 +26,9 @@ export class Note {
     default: '',
   })
   content: string;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const NoteSchema = SchemaFactory.createForClass(Note);

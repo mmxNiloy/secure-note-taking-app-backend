@@ -26,6 +26,9 @@ export class Post {
     default: '',
   })
   body: string;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

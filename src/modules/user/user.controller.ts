@@ -17,6 +17,7 @@ import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { Roles } from '@/common/decorators/roles.decorator';
 import {
   ApiSuccessResponse,
+  ApiSuccessResponseArray,
   ApiSuccessResponsePaginated,
 } from '@/common/decorators/api-success-response.decorator';
 import { ResponseMessage } from '@/common/decorators/response-message.decorator';
@@ -26,6 +27,7 @@ import { RolesGuard } from '@/common/guards/roles.guard';
 import { ParseObjectIdPipe } from '@/common/pipes/parse-object-id.pipe';
 import { JwtPayloadUser } from '@/modules/auth/types/jwt-payload';
 import { CreateUserDto } from './dto/create-user.dto';
+import { InterestGroupDto } from './dto/interest-group.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserRole } from './schema/user.schema';
@@ -54,6 +56,14 @@ export class UserController {
   @ResponseMessage('User created')
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto, { allowRole: true });
+  }
+
+  @Get('by-interests')
+  @ApiOperation({ summary: 'Group users by interests (aggregation)' })
+  @ApiSuccessResponseArray(InterestGroupDto)
+  @ResponseMessage('Users grouped by interests')
+  groupByInterests() {
+    return this.userService.groupByInterests();
   }
 
   @Get(':id')
