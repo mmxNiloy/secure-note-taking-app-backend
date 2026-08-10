@@ -15,6 +15,12 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN ?? '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Secure Note Taking App | API')
     .setDescription('API Documentation for the Secure Note Taking App')
