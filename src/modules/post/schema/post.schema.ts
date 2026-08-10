@@ -1,4 +1,4 @@
-import { User } from '@/modules/user/schema/user.schema';
+import { User } from '../../user/schema/user.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 

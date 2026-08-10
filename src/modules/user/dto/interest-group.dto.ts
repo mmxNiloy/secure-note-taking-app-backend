@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '@/modules/user/schema/user.schema';
+import { UserRole } from '../schema/user.schema';
 
 export class InterestGroupUserDto {
   @ApiProperty()

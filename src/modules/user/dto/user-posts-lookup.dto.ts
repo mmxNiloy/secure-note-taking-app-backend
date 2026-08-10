@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PostResponseDto } from '@/modules/post/dto/post-response.dto';
-import { UserRole } from '@/modules/user/schema/user.schema';
+import { PostResponseDto } from '../../post/dto/post-response.dto';
+import { UserRole } from '../schema/user.schema';
 
 export class UserPostsLookupUserDto {
   @ApiProperty()

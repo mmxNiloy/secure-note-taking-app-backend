@@ -8,9 +8,9 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Response } from 'express';
-import { RESPONSE_MESSAGE_KEY } from '@/common/decorators/response-message.decorator';
-import { ApiSuccessDto } from '@/common/dto/api-response.dto';
-import { PaginatedResult } from '@/common/dto/pagination.dto';
+import { RESPONSE_MESSAGE_KEY } from '../decorators/response-message.decorator';
+import { ApiSuccessDto } from '../dto/api-response.dto';
+import { PaginatedResult } from '../dto/pagination.dto';
 
 function isPaginated<T>(value: unknown): value is PaginatedResult<T> {
   return (

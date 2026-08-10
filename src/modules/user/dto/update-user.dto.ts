@@ -8,7 +8,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { UserRole } from '@/modules/user/schema/user.schema';
+import { UserRole } from '../schema/user.schema';
 
 export class UpdateUserDto {
   @ApiPropertyOptional({ example: 'user@example.com' })

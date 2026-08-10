@@ -15,14 +15,14 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiSuccessResponse,
   ApiSuccessResponsePaginated,
-} from '@/common/decorators/api-success-response.decorator';
-import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import { ResponseMessage } from '@/common/decorators/response-message.decorator';
-import { PaginationQueryDto } from '@/common/dto/pagination.dto';
-import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
-import { ParseObjectIdPipe } from '@/common/pipes/parse-object-id.pipe';
-import { JwtPayloadUser } from '@/modules/auth/types/jwt-payload';
+} from '../../common/decorators/api-success-response.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ResponseMessage } from '../../common/decorators/response-message.decorator';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { ParseObjectIdPipe } from '../../common/pipes/parse-object-id.pipe';
+import { JwtPayloadUser } from '../auth/types/jwt-payload';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NoteResponseDto } from './dto/note-response.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';

@@ -1,16 +1,16 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import { ApiSuccessResponse } from '@/common/decorators/api-success-response.decorator';
-import { ResponseMessage } from '@/common/decorators/response-message.decorator';
-import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
-import { JwtRefreshGuard } from '@/common/guards/jwt-refresh.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ApiSuccessResponse } from '../../common/decorators/api-success-response.decorator';
+import { ResponseMessage } from '../../common/decorators/response-message.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { JwtRefreshGuard } from '../../common/guards/jwt-refresh.guard';
 import { AuthService } from './auth.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
-import { UserResponseDto } from '@/modules/user/dto/user-response.dto';
+import { UserResponseDto } from '../user/dto/user-response.dto';
 import { JwtPayloadUser } from './types/jwt-payload';
 
 @ApiTags('auth')

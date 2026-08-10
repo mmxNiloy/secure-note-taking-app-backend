@@ -1,7 +1,7 @@
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { ApiSuccessDto } from '@/common/dto/api-response.dto';
-import { PaginationMeta } from '@/common/dto/pagination.dto';
+import { ApiSuccessDto } from '../dto/api-response.dto';
+import { PaginationMeta } from '../dto/pagination.dto';
 
 type SwaggerModel =
   Type<unknown> | (abstract new (...args: unknown[]) => unknown);

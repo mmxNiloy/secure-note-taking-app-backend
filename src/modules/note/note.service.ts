@@ -12,9 +12,9 @@ import {
   decodeCursor,
   PaginatedResult,
   PaginationQueryDto,
-} from '@/common/dto/pagination.dto';
-import { JwtPayloadUser } from '@/modules/auth/types/jwt-payload';
-import { UserRole } from '@/modules/user/schema/user.schema';
+} from '../../common/dto/pagination.dto';
+import { JwtPayloadUser } from '../auth/types/jwt-payload';
+import { UserRole } from '../user/schema/user.schema';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NoteResponseDto } from './dto/note-response.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
