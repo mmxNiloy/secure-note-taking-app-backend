@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from '../../user/schema/user.schema';
 
 export class NoteResponseDto {
   @ApiProperty()
@@ -6,6 +7,12 @@ export class NoteResponseDto {
 
   @ApiProperty()
   ownerId: string;
+
+  @ApiProperty()
+  ownerName: string;
+
+  @ApiProperty({ enum: UserRole })
+  ownerRole: UserRole;
 
   @ApiProperty()
   title: string;

@@ -14,11 +14,19 @@ import {
   PaginationQueryDto,
 } from '../../common/dto/pagination.dto';
 import { JwtPayloadUser } from '../auth/types/jwt-payload';
-import { UserRole } from '../user/schema/user.schema';
+import { User, UserRole } from '../user/schema/user.schema';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NoteResponseDto } from './dto/note-response.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { Note, NoteDocument } from './schema/note.schema';
+
+type PopulatedOwner = Pick<User, 'name' | 'role'> & {
+  _id: Types.ObjectId;
+};
+
+type NoteWithOwner = Omit<NoteDocument, 'ownerId'> & {
+  ownerId: Types.ObjectId | PopulatedOwner;
+};
 
 @Injectable()
 export class NoteService {
@@ -35,7 +43,8 @@ export class NoteService {
       title: dto.title,
       content: dto.content ?? '',
     });
-    return this.toResponse(note);
+    await note.populate('ownerId', 'name role');
+    return this.toResponse(note as NoteWithOwner);
   }
 
   async findAll(
@@ -55,23 +64,27 @@ export class NoteService {
 
     const rows = await this.noteModel
       .find(filter)
+      .populate('ownerId', 'name role')
       .sort(CURSOR_SORT)
       .limit(query.limit + 1)
       .exec();
 
-    const { pageItems, meta } = buildCursorMeta(rows, query.limit);
+    const { pageItems, meta } = buildCursorMeta(
+      rows as NoteDocument[],
+      query.limit,
+    );
     return {
-      items: pageItems.map((note) => this.toResponse(note)),
+      items: pageItems.map((note) =>
+        this.toResponse(note as unknown as NoteWithOwner),
+      ),
       meta,
     };
   }
 
-  async findById(
-    id: string,
-    actor: JwtPayloadUser,
-  ): Promise<NoteResponseDto> {
+  async findById(id: string, actor: JwtPayloadUser): Promise<NoteResponseDto> {
     const note = await this.getOwnedOrAdmin(id, actor);
-    return this.toResponse(note);
+    await note.populate('ownerId', 'name role');
+    return this.toResponse(note as unknown as NoteWithOwner);
   }
 
   async update(
@@ -83,13 +96,14 @@ export class NoteService {
 
     const note = await this.noteModel
       .findByIdAndUpdate(id, dto, { returnDocument: 'after' })
+      .populate('ownerId', 'name role')
       .exec();
 
     if (!note) {
       throw new NotFoundException('Note not found');
     }
 
-    return this.toResponse(note);
+    return this.toResponse(note as unknown as NoteWithOwner);
   }
 
   async remove(id: string, actor: JwtPayloadUser): Promise<void> {
@@ -117,14 +131,34 @@ export class NoteService {
     return note;
   }
 
-  private toResponse(note: NoteDocument): NoteResponseDto {
+  private toResponse(note: NoteWithOwner): NoteResponseDto {
+    const owner = this.resolveOwner(note.ownerId);
+
     return {
       id: note._id.toString(),
-      ownerId: note.ownerId.toString(),
+      ownerId: owner.id,
+      ownerName: owner.name,
+      ownerRole: owner.role,
       title: note.title,
       content: note.content,
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
+    };
+  }
+
+  private resolveOwner(ownerId: Types.ObjectId | PopulatedOwner): {
+    id: string;
+    name: string;
+    role: UserRole;
+  } {
+    if (ownerId instanceof Types.ObjectId) {
+      return { id: ownerId.toString(), name: '', role: UserRole.USER };
+    }
+
+    return {
+      id: ownerId._id.toString(),
+      name: ownerId.name,
+      role: ownerId.role,
     };
   }
 }

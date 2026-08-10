@@ -224,6 +224,8 @@ export class UserService {
               in: {
                 id: { $toString: '$$p._id' },
                 authorId: { $toString: '$$p.authorId' },
+                authorName: '$name',
+                authorRole: '$role',
                 title: '$$p.title',
                 body: '$$p.body',
                 createdAt: '$$p.createdAt',
