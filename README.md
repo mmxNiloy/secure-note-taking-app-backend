@@ -76,7 +76,7 @@ JWT_REFRESH_SECRET=your-refresh-secret-key
 JWT_REFRESH_EXPIRES_IN=7d
 BCRYPT_SALT_ROUNDS=12
 ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=ChangeMe123!
+ADMIN_PASSWORD=Admin123@
 ADMIN_NAME=Admin
 ```
 
@@ -85,6 +85,15 @@ Seed the admin user (idempotent):
 ```bash
 pnpm seed:admin
 ```
+
+### Example credentials
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@example.com` | `Admin123@` |
+| User | `user1@example.com` | `User123@` |
+
+Use `pnpm seed:admin` for the admin account (set `ADMIN_*` in `.env` to match). Register `user1@example.com` via `POST /api/auth/register` if it is not already in the database.
 
 ## Run
 
