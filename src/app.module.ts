@@ -10,12 +10,14 @@ import { Configuration } from './config/configuration.type';
 import { UserModule } from './modules/user/user.module';
 import { NoteModule } from './modules/note/note.module';
 import { PostModule } from './modules/post/post.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       load: [configuration],
       validationSchema,
     }),
@@ -30,6 +32,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
       inject: [ConfigService],
     }),
 
+    AuthModule,
     UserModule,
     NoteModule,
     PostModule,

@@ -43,6 +43,9 @@ export class User {
     default: [],
   })
   interests: string[];
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

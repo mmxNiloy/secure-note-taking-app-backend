@@ -8,4 +8,7 @@ export const validationSchema = Joi.object({
   JWT_REFRESH_SECRET: Joi.string().required(),
   JWT_REFRESH_EXPIRES_IN: Joi.string().required(),
   BCRYPT_SALT_ROUNDS: Joi.number().default(12),
+  ADMIN_EMAIL: Joi.string().email().optional(),
+  ADMIN_PASSWORD: Joi.string().min(8).optional(),
+  ADMIN_NAME: Joi.string().optional(),
 });
