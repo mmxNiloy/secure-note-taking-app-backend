@@ -136,7 +136,7 @@ export class UserService {
     }
 
     const user = await this.userModel
-      .findByIdAndUpdate(id, update, { new: true })
+      .findByIdAndUpdate(id, update, { returnDocument: 'after' })
       .select('-passwordHash')
       .exec();
 
@@ -173,6 +173,28 @@ export class UserService {
     passwordHash: string,
   ): Promise<boolean> {
     return bcrypt.compare(password, passwordHash);
+  }
+
+  groupByInterests() {
+    return this.userModel.aggregate([
+      { $unwind: '$interests' },
+      {
+        $group: {
+          _id: '$interests',
+          users: {
+            $push: {
+              id: { $toString: '$_id' },
+              email: '$email',
+              name: '$name',
+              role: '$role',
+            },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $project: { interest: '$_id', _id: 0, users: 1, count: 1 } },
+      { $sort: { interest: 1 } },
+    ]);
   }
 
   toResponse(user: UserDocument | User): UserResponseDto {
