@@ -12,7 +12,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Types } from 'mongoose';
 import {
   ApiSuccessResponse,
   ApiSuccessResponsePaginated,
@@ -60,10 +59,10 @@ export class NoteController {
   @ApiSuccessResponse(NoteResponseDto)
   @ResponseMessage('Note retrieved')
   findOne(
-    @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
+    @Param('id', ParseObjectIdPipe) id: string,
     @CurrentUser() actor: JwtPayloadUser,
   ) {
-    return this.noteService.findById(id.toString(), actor);
+    return this.noteService.findById(id, actor);
   }
 
   @Patch(':id')
@@ -71,11 +70,11 @@ export class NoteController {
   @ApiSuccessResponse(NoteResponseDto)
   @ResponseMessage('Note updated')
   update(
-    @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
+    @Param('id', ParseObjectIdPipe) id: string,
     @Body() dto: UpdateNoteDto,
     @CurrentUser() actor: JwtPayloadUser,
   ) {
-    return this.noteService.update(id.toString(), dto, actor);
+    return this.noteService.update(id, dto, actor);
   }
 
   @Delete(':id')
@@ -83,10 +82,10 @@ export class NoteController {
   @ApiOperation({ summary: 'Delete a note' })
   @ResponseMessage('Note deleted')
   async remove(
-    @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
+    @Param('id', ParseObjectIdPipe) id: string,
     @CurrentUser() actor: JwtPayloadUser,
   ) {
-    await this.noteService.remove(id.toString(), actor);
+    await this.noteService.remove(id, actor);
     return null;
   }
 }

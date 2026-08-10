@@ -29,6 +29,7 @@ import { JwtPayloadUser } from '@/modules/auth/types/jwt-payload';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InterestGroupDto } from './dto/interest-group.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserPostsLookupDto } from './dto/user-posts-lookup.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserRole } from './schema/user.schema';
 import { UserService } from './user.service';
@@ -66,6 +67,16 @@ export class UserController {
     return this.userService.groupByInterests();
   }
 
+  @Get(':id/posts')
+  @ApiOperation({
+    summary: 'Get posts for a user via $lookup aggregation',
+  })
+  @ApiSuccessResponse(UserPostsLookupDto)
+  @ResponseMessage('User posts retrieved')
+  findPostsByUser(@Param('id', ParseObjectIdPipe) id: string) {
+    return this.userService.findPostsByUserId(id);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a user by id (self or admin)' })
   @ApiSuccessResponse(UserResponseDto)
@@ -74,7 +85,7 @@ export class UserController {
     @Param('id', ParseObjectIdPipe) id: string,
     @CurrentUser() actor: JwtPayloadUser,
   ) {
-    this.assertSelfOrAdmin(actor, id.toString());
+    this.assertSelfOrAdmin(actor, id);
     return this.userService.findById(id);
   }
 

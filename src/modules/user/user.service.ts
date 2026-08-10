@@ -197,6 +197,51 @@ export class UserService {
     ]);
   }
 
+  async findPostsByUserId(userId: string) {
+    const rows = await this.userModel.aggregate([
+      { $match: { _id: new Types.ObjectId(userId) } },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: '_id',
+          foreignField: 'authorId',
+          as: 'posts',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          user: {
+            id: { $toString: '$_id' },
+            email: '$email',
+            name: '$name',
+            role: '$role',
+          },
+          posts: {
+            $map: {
+              input: '$posts',
+              as: 'p',
+              in: {
+                id: { $toString: '$$p._id' },
+                authorId: { $toString: '$$p.authorId' },
+                title: '$$p.title',
+                body: '$$p.body',
+                createdAt: '$$p.createdAt',
+                updatedAt: '$$p.updatedAt',
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    if (!rows[0]) {
+      throw new NotFoundException('User not found');
+    }
+
+    return rows[0];
+  }
+
   toResponse(user: UserDocument | User): UserResponseDto {
     const doc = user as UserDocument;
     return {
